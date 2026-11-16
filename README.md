@@ -1,4 +1,3 @@
-# mariem-mohamed_2304251
 # Combined Lab 3 + Lab 4 – Library Website
 
 This folder contains the Lab 3 library requirements and the Lab 4 requirements.
