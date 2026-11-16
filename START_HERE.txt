@@ -1,0 +1,6 @@
+START HERE
+1) Read README.md.
+2) Run problem1_DDL.sql and problem1_DML.sql for Lab 4 Problem 1.
+3) Run problem2_DDL.sql and problem2_DML.sql for the six-table library website database.
+4) Start the Python website from website_python/app.py.
+Lab 3 two-table SQL scripts are separate and optional; they create library_lab3.
