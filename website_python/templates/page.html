@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · Library</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav>
+  <a class="brand" href="/">Library</a>
+  <a href="{{ url_for('lab3_home') }}">Books & Authors</a>
+  <a href="{{ url_for('add_book') }}">Add Book</a>
+  <a href="{{ url_for('add_author') }}">Add Author</a>
+  <a href="{{ url_for('search_books') }}">Search</a>
+  <a href="{{ url_for('catalogue') }}">Catalogue</a>
+  <a href="{{ url_for('reports') }}">Reports</a>
+  <a href="{{ url_for('loans') }}">Loans</a>
+  <a href="{{ url_for('most_borrowed') }}">Most Borrowed</a>
+  <a href="{{ url_for('authors') }}">Author Reports</a>
+</nav>
+<main>
+  <h1>{{ title }}</h1>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <p class="message {{ category }}">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if home %}
+    <section class="intro">
+      <h2>Welcome to the Library website</h2>
+      <p>Manage the library collection, explore the catalogue, and view borrowing information and reports.</p>
+      <div class="cards">
+        <a class="card" href="{{ url_for('lab3_home') }}"><strong>Books &amp; Authors</strong><span>View, add, edit and remove books and authors.</span></a>
+        <a class="card" href="{{ url_for('search_books') }}"><strong>Search the Library</strong><span>Find books, explore the catalogue, and view reports and loans.</span></a>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if tables %}
+    {% for caption, rows in tables %}
+      <section>
+        {% if caption %}<h2>{{ caption }}</h2>{% endif %}
+        {% if rows %}
+          <div class="table-wrap"><table>
+            <thead><tr>{% for column in rows[0].keys() %}<th>{{ column }}</th>{% endfor %}
+              {% if title == "Books and Authors" %}<th>Actions</th>{% endif %}
+            </tr></thead>
+            <tbody>
+            {% for row in rows %}
+              <tr>
+                {% for value in row.values() %}<td>{{ "—" if value is none else value }}</td>{% endfor %}
+                {% if title == "Books and Authors" %}
+                  {% if caption == "Books" %}
+                    <td class="actions">
+                      <a href="{{ url_for('edit_book', book_id=row.book_id) }}">Edit</a>
+                      <form method="post" action="{{ url_for('delete_book', book_id=row.book_id) }}" onsubmit="return confirm('Delete this book?');"><button class="danger">Delete</button></form>
+                    </td>
+                  {% else %}
+                    <td class="actions">
+                      <a href="{{ url_for('edit_author', author_id=row.author_id) }}">Edit</a>
+                      <form method="post" action="{{ url_for('delete_author', author_id=row.author_id) }}" onsubmit="return confirm('Delete this author and all their books?');"><button class="danger">Delete</button></form>
+                    </td>
+                  {% endif %}
+                {% endif %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table></div>
+        {% else %}<p class="empty">No rows found.</p>{% endif %}
+      </section>
+    {% endfor %}
+  {% endif %}
+
+  {% if search %}
+    <form method="get" class="panel">
+      <label>Title keyword
+        <input name="q" value="{{ q }}">
+      </label>
+      <label>Minimum price
+        <input type="number" step="0.01" min="0" name="min" value="{{ minimum }}">
+      </label>
+      <label>Maximum price
+        <input type="number" step="0.01" min="0" name="max" value="{{ maximum }}">
+      </label>
+      <label>Category
+        <select name="category">
+          <option value="">All categories</option>
+          {% for category in categories %}
+            <option value="{{ category.category_id }}" {% if selected_category == category.category_id|string %}selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Search books</button>
+    </form>
+    {% if request.args %}
+      <h2>Matching books (cheapest first)</h2>
+      {% if results %}
+        <div class="table-wrap"><table><thead><tr>{% for c in results[0].keys() %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for row in results %}<tr>{% for value in row.values() %}<td>{{ "—" if value is none else value }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
+      {% else %}<p class="empty">No matching books.</p>{% endif %}
+    {% endif %}
+  {% endif %}
+
+  {% if form_type == "author" %}
+    <form method="post" class="panel narrow">
+      <label>Author name<input name="name" required value="{{ item.name if item else '' }}"></label>
+      <label>Country<input name="country" value="{{ item.country if item else '' }}"></label>
+      <button type="submit">{{ "Save changes" if item else "Add author" }}</button>
+    </form>
+  {% elif form_type == "book" %}
+    <form method="post" class="panel narrow">
+      <label>Book title<input name="title" required value="{{ item.title if item else '' }}"></label>
+      <label>Price<input type="number" name="price" min="0" step="0.01" required value="{{ item.price if item else '' }}"></label>
+      <label>Publish year<input type="number" name="publish_year" min="0" value="{{ item.publish_year if item and item.publish_year else '' }}"></label>
+      <label>Author
+        <select name="author_id" required>
+          {% for a in authors %}<option value="{{ a.author_id }}" {% if item and item.author_id == a.author_id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Publisher
+        <select name="publisher_id" required>
+          {% for p in publishers %}<option value="{{ p.publisher_id }}" {% if item and item.publisher_id == p.publisher_id %}selected{% endif %}>{{ p.name }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Category
+        <select name="category_id" required>
+          {% for c in categories %}<option value="{{ c.category_id }}" {% if item and item.category_id == c.category_id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+        </select>
+      </label>
+      <button type="submit">{{ "Save changes" if item else "Add book" }}</button>
+    </form>
+  {% endif %}
+</main>
+<footer>Library Management System · Introduction to Database Systems</footer>
+</body>
+</html>
