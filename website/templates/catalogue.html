@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">F2.2 — Full Book Catalogue (JOIN Author, Publisher, Category)</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>book_id</th>
+                    <th>title</th>
+                    <th>price</th>
+                    <th>publish_year</th>
+                    <th>author</th>
+                    <th>publisher</th>
+                    <th>category</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for b in books %}
+                <tr>
+                    <td>{{ b.book_id }}</td>
+                    <td class="fw-semibold">{{ b.title }}</td>
+                    <td>${{ "%.2f"|format(b.price) }}</td>
+                    <td>{{ b.publish_year }}</td>
+                    <td>{{ b.author }}</td>
+                    <td>{{ b.publisher }}</td>
+                    <td><span class="badge bg-secondary">{{ b.category }}</span></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

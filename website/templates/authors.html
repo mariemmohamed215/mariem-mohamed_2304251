@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4 class="mb-3">F2.6 — Authors and Books (LEFT JOIN &amp; JOIN)</h4>
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">(a) Every Author &amp; Book Count (Including 0)</div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead><tr><th>Author</th><th>Books Written</th></tr></thead>
+                    <tbody>
+                    {% for a in all_authors %}
+                        <tr><td>{{ a.author }}</td><td>{{ a.books }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">(b) Books Where Author &amp; Publisher Share a Country</div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead><tr><th>Book Title</th><th>Author</th><th>Publisher</th><th>Country</th></tr></thead>
+                    <tbody>
+                    {% for s in same_country %}
+                        <tr>
+                            <td>{{ s.title }}</td>
+                            <td>{{ s.author }}</td>
+                            <td>{{ s.publisher }}</td>
+                            <td><span class="badge bg-info text-dark">{{ s.country }}</span></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

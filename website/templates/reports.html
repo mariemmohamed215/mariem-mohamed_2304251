@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4 class="mb-3">F2.3 — Library Reports (GROUP BY, HAVING, Aggregations)</h4>
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">(a) Books &amp; Average Price per Category</div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead><tr><th>Category</th><th>Books</th><th>Average Price</th></tr></thead>
+                    <tbody>
+                    {% for c in cat_stats %}
+                        <tr>
+                            <td>{{ c.category }}</td>
+                            <td>{{ c.books }}</td>
+                            <td>${{ "%.2f"|format(c.average_price or 0) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">(b) Authors with &ge; 2 Books (HAVING)</div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead><tr><th>Author</th><th>Books</th></tr></thead>
+                    <tbody>
+                    {% for a in author_stats %}
+                        <tr><td>{{ a.author }}</td><td>{{ a.books }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">(c) Whole Library Price Summary</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Total Price:</span><strong>${{ "%.2f"|format(lib_stats.total_price or 0) }}</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Smallest Price:</span><strong>${{ "%.2f"|format(lib_stats.smallest_price or 0) }}</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Largest Price:</span><strong>${{ "%.2f"|format(lib_stats.largest_price or 0) }}</strong>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
